@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "bin": {
-    "what-the-fork": "node ./bin/index.js"
+    "what-the-fork": "./index.js"
   },
   "licenses": [
     {
