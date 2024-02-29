@@ -59,6 +59,8 @@ const getFilesAndDirectories = async (pathToRead, ignored) => {
 
 (async () => {
   // Getting ignored files / directories
+  console.log('Path', entryPath);
+
   const config = await import(path.join(entryPath, 'wtf.config.js'));
 
   const {
