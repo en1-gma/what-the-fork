@@ -1,0 +1,28 @@
+{
+  "name": "what-the-fork",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "what-the-fork": "node ./bin/index.js"
+  },
+  "licenses": [
+    {
+      "type": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/en1-gma/what-the-fork.git"
+  },
+  "keywords": [
+    "spaghetti code"
+  ],
+  "author": "Vincenzo Chiavetta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/en1-gma/what-the-fork/issues"
+  },
+  "homepage": "https://github.com/en1-gma/what-the-fork#readme"
+}
