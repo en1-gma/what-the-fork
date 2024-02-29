@@ -8,7 +8,7 @@ const { promisify } = require('util');
 const readDirAsync = promisify(fs.readdir);
 const execAsync = promisify(exec);
 
-const entryPath = path.resolve(process.argv[1], '..');
+const entryPath = path.resolve(process.env.PWD);
 
 const getAuthorsCommits = async (authors) => {
   const res = await Promise.all(
@@ -59,7 +59,13 @@ const getFilesAndDirectories = async (pathToRead, ignored) => {
 
 (async () => {
   // Getting ignored files / directories
-  console.log('Path', entryPath);
+
+  if (process.versions.node.split('.')[0] < 20) {
+    console.error('You need to have node version 20 or higher');
+    process.exit(0);
+  }
+
+  console.log('Scraping the project at:', entryPath);
 
   const config = await import(path.join(entryPath, 'wtf.config.js'));
 
@@ -71,12 +77,14 @@ const getFilesAndDirectories = async (pathToRead, ignored) => {
   const ignored = Array.isArray(ignore) ? ignore : [];
 
   // Check if the .git folder exists
-  if (fs.existsSync(path.join(entryPath, '.git'))) {
-    const files = await getFilesAndDirectories(entryPath, ignored);
-    const authors = await getAuthors(files)
-    const commits = await getAuthorsCommits(authors);
+  if (!fs.existsSync(path.join(entryPath, '.git'))) {
+    console.error('You don \'t have a .git folder in your project. Please run `git init` first.');
+    process.exit(1);
+  }
 
-    console.table(commits, ['Commits', 'Author', 'Email', 'Added', 'Removed']);
+  const files = await getFilesAndDirectories(entryPath, ignored);
+  const authors = await getAuthors(files)
+  const commits = await getAuthorsCommits(authors);
 
-  } else console.error('You don \'t have a .git folder in your project. Please run `git init` first.')
+  console.table(commits, ['Commits', 'Author', 'Email', 'Added', 'Removed']);
 })();
