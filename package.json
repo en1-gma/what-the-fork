@@ -24,8 +24,5 @@
   "bugs": {
     "url": "https://github.com/en1-gma/what-the-fork/issues"
   },
-  "homepage": "https://github.com/en1-gma/what-the-fork#readme",
-  "dependencies": {
-    "vite": "4.3.9"
-  },
+  "homepage": "https://github.com/en1-gma/what-the-fork#readme"
 }
