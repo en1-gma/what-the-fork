@@ -28,7 +28,4 @@
   "dependencies": {
     "vite": "4.3.9"
   },
-  "scripts": {
-    "build": "vite build"
-  }
 }
