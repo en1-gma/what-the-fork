@@ -8,7 +8,7 @@ const { promisify } = require('util');
 const readDirAsync = promisify(fs.readdir);
 const execAsync = promisify(exec);
 
-const entryPath = path.join(__dirname, '../..');
+const entryPath = path.resolve(process.argv[1], '..');
 
 const getAuthorsCommits = async (authors) => {
   const res = await Promise.all(
