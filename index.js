@@ -14,8 +14,8 @@ const getAuthorsCommits = async (authors) => {
   const res = await Promise.all(
     authors.map(async ({ authorName, authorEmail }) => {
       const authorParam = `${authorName.replace(/[\\$'"]/g, "\\$&")} ${authorEmail}`;
-      const { stdout: execResCommits } = await execAsync(`git log --author="${authorParam}" --oneline | awk '{ sum += 1; } END { print sum; }'`);
-      const { stdout: execResAddRem } = await execAsync(`git log --author="${authorParam}" --numstat | awk '{if (match($1, /^[0-9]+$/) && match($2, /^[0-9]+$/)) { sum += $1; sum2 += $2}} END {print sum, sum2}'`);
+      const { stdout: execResCommits } = await execAsync(`git rev-list --count --author="${authorParam}" --all`);
+      const { stdout: execResAddRem } = await execAsync(`git log --shortstat --author="${authorParam}" -all | grep "files changed" | awk '{files+=$1; inserted+=$4; deleted+=$6} END {print files, inserted, deleted}'`);
       const [added, removed] = execResAddRem.split(' ');
       const [splitRemoved] = removed.split('\n');
 
@@ -71,7 +71,6 @@ const getFilesAndDirectories = async (pathToRead, ignored) => {
 
   const {
     ignore,
-    highlight,
   } = config.default ?? {};
 
   const ignored = Array.isArray(ignore) ? ignore : [];
