@@ -6,6 +6,7 @@
   "bin": {
     "what-the-fork": "./index.js"
   },
+  "preferGlobal": true,
   "licenses": [
     {
       "type": "ISC",
