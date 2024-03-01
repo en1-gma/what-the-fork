@@ -10,21 +10,27 @@ const execAsync = promisify(exec);
 
 const entryPath = path.resolve(process.env.PWD);
 
-const getAuthorsCommits = async (authors) => {
+const getAuthorsCommits = async (authors, rowsCount) => {
   const res = await Promise.all(
     authors.map(async ({ authorName, authorEmail }) => {
       const authorParam = `${authorName.replace(/[\\$'"]/g, "\\$&")} ${authorEmail}`;
       const { stdout: execResCommits } = await execAsync(`git rev-list --count --author="${authorParam}" --all`);
-      const { stdout: execResAddRem } = await execAsync(`git log --shortstat --author="${authorParam}" -all | grep "files changed" | awk '{files+=$1; inserted+=$4; deleted+=$6} END {print files, inserted, deleted}'`);
-      const [added, removed] = execResAddRem.split(' ');
+      const { stdout: execResAddRem } = await execAsync(`git log --shortstat --author="${authorParam}" --all | grep "files changed" | awk '{files+=$1; inserted+=$4; deleted+=$6} END {print files, inserted, deleted}'`);
+      const [files, added, removed] = execResAddRem.split(' ');
       const [splitRemoved] = removed.split('\n');
 
+      const numberAdded = Number(added);
+      const numberRemoved = Number(splitRemoved);
+
       return {
-        Added: Number(added),
+        'Added %': Number(((numberAdded / rowsCount) * 100).toFixed(2)),
+        'Added rows': numberAdded,
+        'Removed %': Number(((numberRemoved / rowsCount) * 100).toFixed(2)),
+        'Removed rows': numberRemoved,
+        'Touched files': Number(files),
         Author: authorName,
         Commits: Number(execResCommits),
         Email: authorEmail,
-        Removed: Number(splitRemoved),
       };
     })
   );
@@ -58,16 +64,15 @@ const getFilesAndDirectories = async (pathToRead, ignored) => {
 }
 
 (async () => {
-  // Getting ignored files / directories
 
+  // Getting ignored files / directories
   if (process.versions.node.split('.')[0] < 20) {
     console.error('You need to have node version 20 or higher');
     process.exit(0);
   }
 
-  console.log('Scraping the project at:', entryPath);
-
-  const config = await import(path.join(entryPath, 'wtf.config.js'));
+  let config = {};
+  if (fs.existsSync(path.join(entryPath, 'wtf.config.js'))) config = await import(path.join(entryPath, 'wtf.config.js'));
 
   const {
     ignore,
@@ -81,9 +86,11 @@ const getFilesAndDirectories = async (pathToRead, ignored) => {
     process.exit(1);
   }
 
+  const rowsCount = Number(((await execAsync('git ls-files | xargs cat | wc -l')).stdout).trim());
   const files = await getFilesAndDirectories(entryPath, ignored);
   const authors = await getAuthors(files)
-  const commits = await getAuthorsCommits(authors);
+  const commits = await getAuthorsCommits(authors, rowsCount);
 
-  console.table(commits, ['Commits', 'Author', 'Email', 'Added', 'Removed']);
+  console.log('\n', 'Processed', rowsCount, 'lines of code,', 'made by', authors.length, 'author(s)', 'in', files.length, 'files', '\n');
+  console.table(commits, ['Commits', 'Author', 'Email', 'Touched files', 'Added rows', 'Removed rows', 'Added %', 'Removed %']);
 })();
