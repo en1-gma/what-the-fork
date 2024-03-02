@@ -9,5 +9,12 @@ module.exports = {
     'package-lock.json',
     'README.md',
   ],
-  highlight: [],
+  threhsoldTollerance: 10,
+  highlights: [
+    {
+      domain: "gmail.com",
+      threshold: 70,
+      threhsoldTollerance: 12,
+    },
+  ],
 };

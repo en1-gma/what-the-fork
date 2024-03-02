@@ -8,16 +8,37 @@ You can install What The Fork via npm:
 
 ```bash 
 npm install -g what-the-fork@latest
+
+OR
+
+npm install what-the-fork@latest
 ```
 
 ## Usage
-To utilize What The Fork, simply run the following command in your terminal, providing the path to the git repository you wish to analyze:
+To utilize What The Fork globally, simply run the following command in your terminal:
 
 ```bash
 npx what-the-fork
 ```
+Or via custom command defined inside package.json:
 
-Set also if you want the wtf.config.js file in your root:
+```json
+{
+  "scripts": {
+    "furck": "what-the-fork"
+    // Other scripts
+  }
+}
+```
+
+And then just
+
+```bash
+npm furck
+```
+
+
+Set the wtf.config.js file in your root to ignore some files and/or folders and enhance the behaviours:
 
 ```js
 module.exports = {   
@@ -30,6 +51,14 @@ module.exports = {
     'node_modules',
     'package-lock.json',
     'README.md',
+  ],
+  threhsoldTollerance: 10, // Expressed as percentage to enhance "globally" ± the tollerance of the provided threshold.
+  highlights: [
+    {
+      domain: 'gmail.com' // The email's domain you want to analyze.
+      threhsoldTollerance: 12, // Expressed as percentage, overrides the previous one.
+      threshold: 60, // Expressed as percentage.
+    }
   ],
 };
 
@@ -45,6 +74,14 @@ export default {
     'package-lock.json',
     'README.md',
   ],
+  threhsoldTollerance: 10, // Expressed as percentage to enhance "globally" ± the tollerance of the provided threshold.
+  highlights: [
+    {
+      domain: 'gmail.com' // The email's domain you want to analyze.
+      threhsoldTollerance: 12, // Expressed as percentage, overrides the previous one.
+      threshold: 60, // Expressed as percentage.
+    }
+  ],
 };
 ```
 
@@ -55,3 +92,4 @@ This will generate a detailed report containing statistics such as:
 - Total lines of project
 - Lines of code added/removed
 - % Statitiscs
+- Some fancy warnings
